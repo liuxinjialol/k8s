@@ -63,7 +63,8 @@ yum -y install docker
 新建/etc/kubernetes/config
 启动
 systemctl daemon-reload
-systemctl start kube-proxy
+systemctl enable kube-proxy.service
+systemctl start kube-proxy.service
 验证：
 netstat -lntp | grep kube-proxy
 
@@ -72,6 +73,7 @@ netstat -lntp | grep kube-proxy
 新建/var/lib/kubelet/kubeconfig
 启动：
 systemctl daemon-reload
+systemctl enable kubelet.service
 systemctl start kubelet.service
 验证：
 netstat -tnlp | grep kubelet
