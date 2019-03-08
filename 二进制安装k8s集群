@@ -37,7 +37,7 @@ systemctl start etcd.service
 etcdctl cluster-health
 
 安装k8s的master节点
-将kube-apiserver、kube-controller-manager、kube-scheduler可执行文件复制到/usr/bin目录
+将kubectl、kube-apiserver、kube-controller-manager、kube-scheduler可执行文件复制到/usr/bin目录
 新建/usr/lib/systemd/system/kube-apiserver.service文件
 新建/etc/kubernetes/apiserver
 新建/usr/lib/systemd/system/kube-controller-manager.service
