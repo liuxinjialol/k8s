@@ -27,7 +27,54 @@ vi /etc/
 将下载的etcd文件包进行解压，解压后将etcd、etcdctl二进制文件复制到/usr/bin目录。
 在/usr/lib/systemd/system/目录下创建文件etcd.service。
 创建配置文件/etc/etcd/etcd.conf
-#systemctl daemon-reload
-#systemctl enable etcd.service
-#systemctl start etcd.service
-#etcdctl cluster-health
+启动：
+systemctl daemon-reload
+systemctl enable etcd.service
+systemctl start etcd.service
+验证：
+etcdctl cluster-health
+
+安装k8s的master节点
+将kube-apiserver、kube-controller-manager、kube-scheduler可执行文件复制到/usr/bin目录
+新建/usr/lib/systemd/system/kube-apiserver.service文件
+新建/etc/kubernetes/apiserver
+新建/usr/lib/systemd/system/kube-controller-manager.service
+新建/etc/kubernetes/controller-manager
+新建/usr/lib/systemd/system/kube-scheduler.service
+新建/etc/kubernetes/scheduler
+启动：
+systemctl daemon-reload 
+systemctl enable kube-apiserver.service
+systemctl start kube-apiserver.service
+systemctl enable kube-controller-manager.service
+systemctl start kube-controller-manager.service
+systemctl enable kube-scheduler.service
+systemctl start kube-scheduler.service
+验证：
+kubectl get cs
+
+安装k8s的node节点
+yum -y install docker
+拷贝kubelet、kube-proxy可执行文件复制到/usr/bin目录
+新建/usr/lib/systemd/system/kube-proxy.service
+新建/etc/kubernetes/proxy
+新建/etc/kubernetes/config
+启动
+systemctl daemon-reload
+systemctl start kube-proxy
+验证：
+netstat -lntp | grep kube-proxy
+
+新建/usr/lib/systemd/system/kubelet.service
+新建/etc/kubernetes/kubelet
+新建/var/lib/kubelet/kubeconfig
+启动：
+systemctl daemon-reload
+systemctl start kubelet.service
+验证：
+netstat -tnlp | grep kubelet
+
+master验证node
+kubectl get node
+
+
