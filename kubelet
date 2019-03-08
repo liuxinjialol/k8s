@@ -1,0 +1,5 @@
+KUBELET_ADDRESS="--address=0.0.0.0"
+KUBELET_HOSTNAME="--hostname-override=10.0.209.152"   #your node ip address
+KUBELET_API_SERVER="--api-servers=http://10.0.209.151:8080"
+KUBELET_POD_INFRA_CONTAINER="--pod-infra-container-image=reg.docker.tb/harbor/pod-infrastructure:latest"
+KUBELET_ARGS="--enable-server=true --enable-debugging-handlers=true --fail-swap-on=false --kubeconfig=/var/lib/kubelet/kubeconfig"
