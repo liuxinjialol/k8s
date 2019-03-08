@@ -1,16 +1,16 @@
 机器准备
 k8s-master
-10.0.209.151
+192.168.56.160
 k8s-master
 etcd、kube-apiserver、kube-controller-manager、kube-scheduler
 
 k8s-node-1
-10.0.209.152
+192.168.56.161
 k8s-node
 kubelet、docker、kube_proxy
 
 k8s-node-2
-10.0.209.153
+192.168.56.162
 k8s-node
 kubelet、docker、kube_proxy
 
