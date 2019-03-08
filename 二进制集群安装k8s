@@ -21,12 +21,13 @@ vi /etc/selinux/config
 SELINUX=disabled
 
 swapoff -a && sysctl -w vm.swappiness=0
-vi /etc/
+vi /etc/fstab   注释掉UUID
+#UUID=7bff6243-324c-4587-b550-55dc34018ebf swap                    swap    defaults        0 0
 
 安装ETCD
 将下载的etcd文件包进行解压，解压后将etcd、etcdctl二进制文件复制到/usr/bin目录。
-在/usr/lib/systemd/system/目录下创建文件etcd.service。
-创建配置文件/etc/etcd/etcd.conf
+新建/usr/lib/systemd/system/etcd.service。
+新建/etc/etcd/etcd.conf
 启动：
 systemctl daemon-reload
 systemctl enable etcd.service
