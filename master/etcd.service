@@ -6,7 +6,7 @@ Type=notify
 TimeoutStartSec=0
 Restart=always
 WorkingDirectory=/var/lib/etcd/
-EnvironmentFile=-/etc/etcd/etcd.conf
+EnvironmentFile=/etc/etcd/etcd.conf
 ExecStart=/usr/bin/etcd 
 
 [Install]
