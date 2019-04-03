@@ -8,7 +8,7 @@ docker pull registry.cn-beijing.aliyuncs.com/zhoujun/kube-controller-manager-amd
 docker pull registry.cn-beijing.aliyuncs.com/zhoujun/kube-apiserver-amd64:v1.11.3
 docker pull registry.cn-beijing.aliyuncs.com/zhoujun/etcd-amd64:3.2.18
 
-打成gcr的tag
+打上k8s.gcr.io的tag
 docker tag registry.cn-beijing.aliyuncs.com/zhoujun/kube-proxy-amd64:v1.11.3 k8s.gcr.io/kube-proxy-amd64:v1.11.3
 docker tag registry.cn-beijing.aliyuncs.com/zhoujun/kube-scheduler-amd64:v1.11.3 k8s.gcr.io/kube-scheduler-amd64:v1.11.3
 docker tag registry.cn-beijing.aliyuncs.com/zhoujun/kube-apiserver-amd64:v1.11.3 k8s.gcr.io/kube-apiserver-amd64:v1.11.3
