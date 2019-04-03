@@ -2,29 +2,26 @@
 
 机器准备
 
-k8s-master(安装etcd、kube-apiserver、kube-controller-manager、kube-scheduler)
-192.168.56.160
-修改hostname
+master节点，IP地址192.168.56.160，安装etcd、kube-apiserver、kube-controller-manager、kube-scheduler
+修改hostname（k8s-master）
 #vi /etc/hostname
 
-k8s-node-1(安装kubelet、docker、kube_proxy)
-192.168.56.161
-修改hostname
+node节点，IP地址192.168.56.161，安装docker、kubelet、kube_proxy
+修改hostname（k8s-node1）
 #vi /etc/hostname
 
-k8s-node-2(安装kubelet、docker、kube_proxy)
-192.168.56.162
-修改hostname
+node节点，IP地址192.168.56.162，安装docker、kubelet、kube_proxy
+修改hostname（k8s-node2）
 #vi /etc/hostname
 
-初始化环境（关闭防火墙和swap）
+所有机器初始化环境（关闭防火墙和swap）
 #systemctl stop firewalld && systemctl disable firewalld
 #setenforce 0
 设置SELINUX=disabled
 #vi /etc/selinux/config
 #swapoff -a && sysctl -w vm.swappiness=0
 
-如果是使用visualbox等虚拟机软件，需要注释掉UUID，物理机跳过此步骤
+如果是使用visualbox等虚拟机软件，需要注释掉UUID，物理机或云主机跳过此步骤
 #vi /etc/fstab
 这一行注释掉#UUID=5b0b2f7c-8887-42dd-91ec-57071d0e5e0f /boot      xfs     defaults    0 0
 
@@ -36,7 +33,7 @@ master节点
 #touch /usr/lib/systemd/system/etcd.service
 #touch /etc/etcd/etcd.conf
 
-etcd.service、etcd.conf文件内容在master目录有例子
+etcd.service、etcd.conf文件内容在etcd目录有例子
 
 启动ETCD：
 #systemctl daemon-reload
@@ -47,7 +44,7 @@ etcd.service、etcd.conf文件内容在master目录有例子
 
 master节点
 安装kubectl、kube-apiserver、kube-controller-manager、kube-scheduler
-在解压的/kubernetes/server/bin中将kubectl、kube-apiserver、kube-controller-manager、kube-scheduler可执行文件复制到/usr/bin目录
+在解压的/kubernetes/server/bin目录中将kubectl、kube-apiserver、kube-controller-manager、kube-scheduler可执行文件复制到/usr/bin目录
 #cp kubectl、kube-apiserver、kube-controller-manager、kube-scheduler /usr/bin
 #mkdir -p /etc/kubernetes
 #touch /usr/lib/systemd/system/kube-apiserver.service
@@ -99,7 +96,7 @@ kube-proxy.service、proxy、config文件内容在node目录有例子
 #touch /etc/kubernetes/kubelet
 #touch /var/lib/kubelet/kubeconfig
 
-#kubelet.service、kubelet、kubeconfig文件内容在node目录有例子
+kubelet.service、kubelet、kubeconfig文件内容在node目录有例子
 
 启动：
 #systemctl daemon-reload
