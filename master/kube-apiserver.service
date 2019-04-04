@@ -4,7 +4,7 @@ After=etcd.service
 Wants=etcd.service
 
 [Service]
-EnvironmentFile=/etc/kubernetes/apiserver
+EnvironmentFile=/etc/kubernetes/master-config
 ExecStart=/usr/bin/kube-apiserver  \
         $KUBE_ETCD_SERVERS \
         $KUBE_API_ADDRESS \
