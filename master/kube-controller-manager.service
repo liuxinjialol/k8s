@@ -4,7 +4,7 @@ After=kube-apiserver.service
 Requires=kube-apiserver.service
 
 [Service]
-EnvironmentFile=-/etc/kubernetes/controller-manager
+EnvironmentFile=/etc/kubernetes/master-config
 ExecStart=/usr/bin/kube-controller-manager \
         $KUBE_MASTER \
         $KUBE_CONTROLLER_MANAGER_ARGS
