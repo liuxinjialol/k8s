@@ -48,13 +48,11 @@ master节点
 #cp kubectl、kube-apiserver、kube-controller-manager、kube-scheduler /usr/bin
 #mkdir -p /etc/kubernetes
 #touch /usr/lib/systemd/system/kube-apiserver.service
-#touch /etc/kubernetes/apiserver
 #touch /usr/lib/systemd/system/kube-controller-manager.service
-#touch /etc/kubernetes/controller-manager
 #touch /usr/lib/systemd/system/kube-scheduler.service
-#touch /etc/kubernetes/scheduler
+#touch /etc/kubernetes/master-config
 
-kube-apiserver.service、apiserver、kube-controller-manager.service、controller-manager、kube-scheduler.service、scheduler文件内容在master目录有例子
+kube-apiserver.service、kube-controller-manager.service、kube-scheduler.service、master-config文件内容在master目录有例子
 
 启动:
 #systemctl daemon-reload 
@@ -76,10 +74,9 @@ node节点
 #cp kube-proxy /usr/bin
 #mkdir -p /etc/kubernetes
 #touch /usr/lib/systemd/system/kube-proxy.service
-#touch /etc/kubernetes/proxy
-#touch /etc/kubernetes/config
+#touch /etc/kubernetes/node-config
 
-kube-proxy.service、proxy、config文件内容在node目录有例子
+kube-proxy.service、node-config文件内容在node目录有例子
 
 启动:
 #systemctl daemon-reload
@@ -93,10 +90,9 @@ kube-proxy.service、proxy、config文件内容在node目录有例子
 #cp kubelet /usr/bin
 #mkdir -p /var/lib/kubelet
 #touch /usr/lib/systemd/system/kubelet.service
-#touch /etc/kubernetes/kubelet
 #touch /var/lib/kubelet/kubeconfig
 
-kubelet.service、kubelet、kubeconfig文件内容在node目录有例子
+kubelet.service、kubeconfig文件内容在node目录有例子
 
 启动：
 #systemctl daemon-reload
