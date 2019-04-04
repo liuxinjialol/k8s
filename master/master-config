@@ -1,0 +1,13 @@
+KUBE_MASTER="--master=http://192.168.56.160:8080"
+
+KUBE_API_ADDRESS="--insecure-bind-address=0.0.0.0"
+KUBE_API_PORT="--insecure-port=8080"
+KUBE_ETCD_SERVERS="--etcd-servers=http://192.168.56.160:2379"
+KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range=192.168.0.0/16"
+KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,LimitRanger,ResourceQuota"
+KUBE_API_LOG="--logtostderr=false --log-dir=/var/log/kubernets/apiserver --v=2"
+KUBE_API_ARGS="--enable-swagger-ui=true"
+
+KUBE_CONTROLLER_MANAGER_ARGS=""
+
+KUBE_SCHEDULER_ARGS="--logtostderr=true --log-dir=/var/log/kubernetes/scheduler --v=2"
