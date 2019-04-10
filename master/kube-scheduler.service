@@ -8,6 +8,8 @@ User=root
 EnvironmentFile=/etc/kubernetes/master-config
 ExecStart=/usr/bin/kube-scheduler \
         $KUBE_MASTER \
+        $KUBE_LOGTOSTDERR \
+	$KUBE_LOG_LEVEL \
         $KUBE_SCHEDULER_ARGS
 Restart=on-failure
 LimitNOFILE=65536
