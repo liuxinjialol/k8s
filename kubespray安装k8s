@@ -1,1 +1,12 @@
+准备工作，每台机器都要执行
+
+关闭防火墙
+#systemctl disable firewalld && systemctl stop firewalld
+
+设置SELINUX
+# vi /etc/selinux/config
+  SELINUX=disabled
+
+关闭swap
+swapoff -a && echo "vm.swappiness=0" >> /etc/sysctl.conf && sysctl -p && free –h
 
