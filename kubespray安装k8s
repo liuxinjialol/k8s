@@ -1,3 +1,6 @@
+k8s安装版本V1.13.5，#为linux需要执行的命令
+
+
 准备工作，每台机器都要执行
 
 关闭防火墙
@@ -8,5 +11,48 @@
   SELINUX=disabled
 
 关闭swap
-swapoff -a && echo "vm.swappiness=0" >> /etc/sysctl.conf && sysctl -p && free –h
+#swapoff -a && echo "vm.swappiness=0" >> /etc/sysctl.conf && sysctl -p && free –h
+
+
+更新系统内核并重启
+#rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+#rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+#yum --enablerepo=elrepo-kernel install -y kernel-lt kernel-lt-devel
+#grub2-set-default 0
+#reboot
+
+增加内核设置
+#vi /etc/sysctl.conf
+  net.bridge.bridge-nf-call-iptables = 1
+  net.bridge.bridge-nf-call-ip6tables = 1
+#sysctl -p
+
+---------------------------------------------分割线-------------------------------------------
+安装kubespray，版本选择release-2.9
+地址：https://github.com/kubernetes-sigs/kubespray/tree/release-2.9
+
+安装 centos的epel源
+#yum -y install epel-release
+#yum clean all && yum makecache
+
+安装软件，ansible 必须 >= 2.7
+#yum install -y python-pip python34 python-netaddr python34-pip ansible git
+
+下载kubespray源码
+#git clone https://github.com/kubernetes-sigs/kubespray
+
+后续操作均在~/kubespray目录下执行
+#cd kubespray
+#pip install -r requirements.txt
+
+复制配置我们要安装集群的配置文件
+cp -rfp inventory/sample inventory/mycluster
+
+
+
+
+
+
+
+
 
