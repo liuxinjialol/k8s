@@ -1,3 +1,12 @@
+#ssh-keygen -t rsa
+#ssh-copy-id root@192.168.56.120
+
+#ssh-keygen -t rsa
+#ssh-copy-id root@192.168.56.121
+
+保障免ssh登录
+
+
 k8s安装版本V1.13.5，#为linux需要执行的命令
 
 
