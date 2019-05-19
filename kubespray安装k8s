@@ -39,6 +39,8 @@ IP 192.168.56.121
   net.bridge.bridge-nf-call-ip6tables = 1
 #sysctl -p
 
+拷贝releases文件夹到每台机器/tmp
+
 -----------------------------------------119机器执行-------------------------------------------
 安装kubespray，版本选择release-2.9,地址：https://github.com/kubernetes-sigs/kubespray/tree/release-2.9
 
