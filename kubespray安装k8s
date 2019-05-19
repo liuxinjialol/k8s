@@ -1,40 +1,39 @@
 k8s安装版本V1.13.5，#为linux需要执行的命令
 
-准备3台机器
-IP 192.168.56.200
-IP 192.168.56.120
-IP 192.168.56.121
-IP 192.168.56.122
+准备4台机器，master、node1、node2资源至少需要2cpu，2000M内存
+192.168.56.200        kubespray，私有register
+192.168.56.120        master
+IP 192.168.56.121     node1
+IP 192.168.56.122     node2
 
-200机器
+修改/etc/hosts
+----------------------------200机器执行------------------------------
 #vi /etc/hosts
 192.168.56.120 master
 192.168.56.121 node1
 192.168.56.122 node2
 
-120机器
+----------------------------120机器执行------------------------------
 #vi /etc/hosts
 192.168.56.120 master
 
-121机器
+----------------------------121机器执行------------------------------
 #vi /etc/hosts
 192.168.56.121 node1
 
-122机器
+----------------------------122机器执行------------------------------
 #vi /etc/hosts
 192.168.56.122 node2
 
 
-其中 192.168.56.200运行安装脚本，120为master节点，121、122为node节点
-
-保障200可以免登录120、121、122
-200执行
+200机器免ssh登录120、121、122
+----------------------------200机器执行------------------------------
 #ssh-keygen -t rsa
 #ssh-copy-id root@192.168.56.120
 #ssh-copy-id root@192.168.56.121
 #ssh-copy-id root@192.168.56.122
 
-准备工作，每台机器都要执行
+----------------------------每台机器都要执行----------------------------------
 
 关闭防火墙
 #systemctl disable firewalld && systemctl stop firewalld
@@ -62,7 +61,7 @@ IP 192.168.56.122
 
 拷贝releases文件夹到每台机器/tmp
 
------------------------------------------119机器执行-------------------------------------------
+-----------------------------------------200机器执行-------------------------------------------
 安装kubespray，版本选择release-2.9,地址：https://github.com/kubernetes-sigs/kubespray/tree/release-2.9
 
 安装 centos的epel源
@@ -84,7 +83,7 @@ IP 192.168.56.122
 
 #vi inventory/mycluster/inventory.ini
 [all]
-master ansible_host=master  ip=192.168.56.120 
+master ansible_host=master   ip=192.168.56.120 
 node1  ansible_host=node1    ip=192.168.56.121 
 node2  ansible_host=node2    ip=192.168.56.122 
 
@@ -105,7 +104,7 @@ kube-node
 [calico-rr]
 
 ----------------------------------------------------------------------------------------
-替换被墙的镜像到私有仓库
+替换被墙的镜像到私有仓库，具体参考k8s-cluster.yml和main.yml文件
 
 #vi inventory/mycluster/group_vars/k8s-cluster/k8s-cluster.yml
 kube_image_repo: "gcr.io/google-containers" //修改为kube_image_repo: "192.168.56.200:5000"
@@ -118,17 +117,17 @@ vi ./roles/kubernetes-apps/ansible/templates/dashboard.yml.j2
 type: NodePort
 
 
----------------------------------------------------------------------------------------
+---------------------------------------运行安装脚本--------------------------------------
 第一次执行
 ansible-playbook -i inventory/mycluster/hosts.ini cluster.yml -b -v -k
 
-执行会报错停止，docker已经安装成功，原因是docker默认的镜像仓库不是192.168.56.200:5000，不能pull镜像，解决办法
-将daemon.json复制到每台机器的/etc/docker目录，reboot
+执行会报错停止，原因是docker默认的镜像仓库不是192.168.56.200:5000，不能pull镜像，docker已经安装成功，
+解决办法：将daemon.json复制到每台机器的/etc/docker目录，reboot
 
 第二次执行
 ansible-playbook -i inventory/mycluster/hosts.ini cluster.yml -b -v -k
 
-安装会成功，查看dashboard的服务端口port
+安装成功，查看dashboard的服务端口port
 #kubectl get svc --all-namespaces | grep kubernetes-dashboard
 
 获取dashboard的token
@@ -138,7 +137,7 @@ dashboard访问地址：https://192.168.56.120:xxxx
 
 
 
----------------------------------运维经验-------------------------------------
+----------------------------------------运维经验-----------------------------------------
 如果需要扩容Work节点，则修改hosts.ini文件，增加新增的机器信息。然后执行下面的命令：
 ansible-playbook -i inventory/mycluster/hosts.ini scale.yml -b -v -k
 
