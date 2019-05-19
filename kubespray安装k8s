@@ -107,10 +107,14 @@ kube-node
 替换被墙的镜像到私有仓库，具体参考k8s-cluster.yml和main.yml文件
 
 #vi inventory/mycluster/group_vars/k8s-cluster/k8s-cluster.yml
-kube_image_repo: "gcr.io/google-containers" //修改为kube_image_repo: "192.168.56.200:5000"
+kube_image_repo: "192.168.56.200:5000"
 
 #vi ./roles/download/defaults/main.yml
-"gcr.io/google-containers" //修改为"192.168.56.200:5000"
+kube_image_repo: "192.168.56.200:5000"
+etcd_image_repo: "192.168.56.200:5000/etcd"
+pod_infra_image_repo: "192.168.56.200:5000/pause-{{ image_arch }}"
+dnsautoscaler_image_repo: "192.168.56.200:5000/cluster-proportional-autoscaler-{{ image_arch }}"
+dashboard_image_repo: "192.168.56.200:5000/kubernetes-dashboard-{{ image_arch }}"
 
 修改dashboard开启nodePort端口
 vi ./roles/kubernetes-apps/ansible/templates/dashboard.yml.j2
