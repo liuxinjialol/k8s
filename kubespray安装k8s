@@ -1,17 +1,38 @@
 k8s安装版本V1.13.5，#为linux需要执行的命令
 
 准备3台机器
-IP 192.168.56.119
+IP 192.168.56.200
 IP 192.168.56.120
 IP 192.168.56.121
+IP 192.168.56.122
 
-其中 192.168.56.119负责运行安装脚本，120为master，121为node
+200机器
+#vi /etc/hosts
+192.168.56.120 master
+192.168.56.121 node1
+192.168.56.122 node2
 
-保障119可以免登录120 121
-119执行
+120机器
+#vi /etc/hosts
+192.168.56.120 master
+
+121机器
+#vi /etc/hosts
+192.168.56.121 node1
+
+122机器
+#vi /etc/hosts
+192.168.56.122 node2
+
+
+其中 192.168.56.200运行安装脚本，120为master节点，121、122为node节点
+
+保障200可以免登录120、121、122
+200执行
 #ssh-keygen -t rsa
 #ssh-copy-id root@192.168.56.120
 #ssh-copy-id root@192.168.56.121
+#ssh-copy-id root@192.168.56.122
 
 准备工作，每台机器都要执行
 
@@ -63,16 +84,18 @@ IP 192.168.56.121
 
 #vi inventory/mycluster/inventory.ini
 [all]
-node1 ansible_host=master  ip=192.168.56.120 
-node2 ansible_host=node    ip=192.168.56.121 
+master ansible_host=master  ip=192.168.56.120 
+node1  ansible_host=node1    ip=192.168.56.121 
+node2  ansible_host=node2    ip=192.168.56.122 
 
 [kube-master]
-node1
+master
 
 [etcd]
-node1
+master
 
 [kube-node]
+node1
 node2
 
 [k8s-cluster:children]
@@ -81,20 +104,26 @@ kube-node
 
 [calico-rr]
 
+----------------------------------------------------------------------------------------
+替换被墙的镜像到私有仓库
+
 #vi inventory/mycluster/group_vars/k8s-cluster/k8s-cluster.yml
 kube_image_repo: "gcr.io/google-containers" //修改为kube_image_repo: "192.168.56.200:5000"
 
 #vi ./roles/download/defaults/main.yml
 "gcr.io/google-containers" //修改为"192.168.56.200:5000"
 
+修改dashboard开启nodePort端口
 vi ./roles/kubernetes-apps/ansible/templates/dashboard.yml.j2
 type: NodePort
 
+
+---------------------------------------------------------------------------------------
 第一次执行
 ansible-playbook -i inventory/mycluster/hosts.ini cluster.yml -b -v -k
 
-执行会报错停止，docker已经安装成功，原因是docker默认的镜像仓库不是192.168.56.200:5000，不能pull镜像
-将daemon.json复制到机器的/etc/docker目录，reboot
+执行会报错停止，docker已经安装成功，原因是docker默认的镜像仓库不是192.168.56.200:5000，不能pull镜像，解决办法
+将daemon.json复制到每台机器的/etc/docker目录，reboot
 
 第二次执行
 ansible-playbook -i inventory/mycluster/hosts.ini cluster.yml -b -v -k
@@ -102,10 +131,10 @@ ansible-playbook -i inventory/mycluster/hosts.ini cluster.yml -b -v -k
 安装会成功，查看dashboard的服务端口port
 #kubectl get svc --all-namespaces | grep kubernetes-dashboard
 
-获取token
+获取dashboard的token
 kubectl -n kube-system describe $(kubectl -n kube-system get secret -n kube-system -o name | grep namespace) | grep token
 
-dashboard访问地址：https://192.168.56.120:port
+dashboard访问地址：https://192.168.56.120:xxxx
 
 
 
