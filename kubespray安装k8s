@@ -45,6 +45,8 @@ IP 192.168.56.122     node2
 关闭swap
 #swapoff -a && echo "vm.swappiness=0" >> /etc/sysctl.conf && sysctl -p && free –h
 
+设置iptables
+iptables -P FORWARD ACCEPT
 
 更新系统内核并重启
 #rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
