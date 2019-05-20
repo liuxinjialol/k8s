@@ -125,13 +125,13 @@ type: NodePort
 
 ---------------------------------------运行安装脚本--------------------------------------
 第一次执行
-ansible-playbook -i inventory/mycluster/hosts.ini cluster.yml -b -v -k
+ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b -v -k
 
 执行会报错停止，原因是docker默认的镜像仓库不是192.168.56.200:5000，不能pull镜像，docker已经安装成功，
 解决办法：将daemon.json复制到每台机器的/etc/docker目录，reboot
 
 第二次执行
-ansible-playbook -i inventory/mycluster/hosts.ini cluster.yml -b -v -k
+ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b -v -k
 
 安装成功，查看dashboard的服务端口port
 #kubectl get svc --all-namespaces | grep kubernetes-dashboard
