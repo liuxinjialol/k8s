@@ -57,8 +57,8 @@ iptables -P FORWARD ACCEPT
 
 增加内核设置
 #vi /etc/sysctl.conf
-  net.bridge.bridge-nf-call-iptables = 1
-  net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+net.bridge.bridge-nf-call-ip6tables = 1
 #sysctl -p
 
 拷贝releases文件夹到每台机器/tmp
