@@ -1,5 +1,8 @@
 k8s安装版本V1.13.5，#为linux需要执行的命令
 
+关闭网络管理，否则静态ip不生效，还是动态ip
+systemctl stop NetworkManager && systemctl disable NetworkManager
+
 准备4台机器，master、node1、node2资源至少需要2cpu，2000M内存
 192.168.56.200        kubespray，私有register
 192.168.56.120        master
@@ -46,12 +49,14 @@ IP 192.168.56.122     node2
 #swapoff -a && echo "vm.swappiness=0" >> /etc/sysctl.conf && sysctl -p && free –h
 
 设置iptables
-iptables -P FORWARD ACCEPT
+#iptables -P FORWARD ACCEPT
 
 更新系统内核并重启
 #rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
 #yum --enablerepo=elrepo-kernel install -y kernel-lt kernel-lt-devel
+设置启动顺序
 #grub2-set-default 0
+重启
 #reboot
 
 增加内核设置
@@ -86,7 +91,7 @@ net.bridge.bridge-nf-call-ip6tables = 1
 [all]
 master ansible_host=master   ip=192.168.56.120 
 node1  ansible_host=node1    ip=192.168.56.121 
-node2  ansible_host=node2    ip=192.168.56.122 
+node2  ansible_host=node2   ip=192.168.56.122 
 
 [kube-master]
 master
