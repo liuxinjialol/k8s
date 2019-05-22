@@ -1,20 +1,10 @@
-k8s安装版本V1.13.5，#为linux需要执行的命令
-
-关闭网络管理，否则静态ip不生效，还是动态ip
-systemctl stop NetworkManager && systemctl disable NetworkManager
+说明：k8s安装版本V1.13.5，#为linux需要执行的命令
 
 准备4台机器，master、node1、node2资源至少需要2cpu，2000M内存
-192.168.56.200        kubespray，私有register
+192.168.56.200        kubespray、私有register仓库、安装机
 192.168.56.120        master
-IP 192.168.56.121     node1
-IP 192.168.56.122     node2
-
-修改/etc/hosts
-----------------------------200机器执行------------------------------
-#vi /etc/hosts
-192.168.56.120 master
-192.168.56.121 node1
-192.168.56.122 node2
+192.168.56.121         node1
+192.168.56.122        node2
 
 ----------------------------120机器执行------------------------------
 #vi /etc/hosts
@@ -28,22 +18,18 @@ IP 192.168.56.122     node2
 #vi /etc/hosts
 192.168.56.122 node2
 
+----------------------------120、121、122机器------------------------
+拷贝releases文件夹到每台机器/tmp目录
+拷贝daemon.json文件到每台机器/etc/docker目录
 
-200机器免ssh登录120、121、122
-----------------------------200机器执行------------------------------
-#ssh-keygen -t rsa
-#ssh-copy-id root@192.168.56.120
-#ssh-copy-id root@192.168.56.121
-#ssh-copy-id root@192.168.56.122
-
-----------------------------每台机器都要执行----------------------------------
+关闭网络管理，否则静态ip不生效，还是动态ip
+#systemctl stop NetworkManager && systemctl disable NetworkManager
 
 关闭防火墙
 #systemctl disable firewalld && systemctl stop firewalld
 
-设置SELINUX
-# vi /etc/selinux/config
-  SELINUX=disabled
+设置SELINUX=disabled
+#sed -i 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 
 关闭swap
 #swapoff -a && echo "vm.swappiness=0" >> /etc/sysctl.conf && sysctl -p && free –h
@@ -51,23 +37,34 @@ IP 192.168.56.122     node2
 设置iptables
 #iptables -P FORWARD ACCEPT
 
-更新系统内核并重启
-#rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
-#yum --enablerepo=elrepo-kernel install -y kernel-lt kernel-lt-devel
-设置启动顺序
+更新系统内核并重启,安装perl
+#yum install -y perl
+#rpm -Uvh /tmp/releases/linux/kernel-lt-4.4.180-1.el7.elrepo.x86_64.rpm
+#rpm -Uvh /tmp/releases/linux/kernel-lt-devel-4.4.180-1.el7.elrepo.x86_64.rpm
+
+设置新内核优先启动
 #grub2-set-default 0
+
 重启
 #reboot
 
-增加内核设置
-#vi /etc/sysctl.conf
-net.bridge.bridge-nf-call-iptables = 1
-net.bridge.bridge-nf-call-ip6tables = 1
-#sysctl -p
-
-拷贝releases文件夹到每台机器/tmp
+重启后增加内核设置
+#echo "net.bridge.bridge-nf-call-iptables = 1" >> /etc/sysctl.conf && echo "net.bridge.bridge-nf-call-ip6tables = 1" >> /etc/sysctl.conf   && sysctl -p 
 
 -----------------------------------------200机器执行-------------------------------------------
+拷贝releases文件夹到200机器/tmp
+
+#vi /etc/hosts
+192.168.56.120 master
+192.168.56.121 node1
+192.168.56.122 node2
+
+200机器免ssh登录120、121、122
+#ssh-keygen -t rsa
+#ssh-copy-id root@192.168.56.120
+#ssh-copy-id root@192.168.56.121
+#ssh-copy-id root@192.168.56.122
+
 安装kubespray，版本选择release-2.9,地址：https://github.com/kubernetes-sigs/kubespray/tree/release-2.9
 
 安装 centos的epel源
@@ -75,19 +72,19 @@ net.bridge.bridge-nf-call-ip6tables = 1
 #yum clean all && yum makecache
 
 安装软件，ansible 必须 >= 2.7
-#yum install -y python-pip python34 python-netaddr python34-pip ansible git
+#yum install -y python-pip python34 python-netaddr python34-pip ansible
 
-下载kubespray源码
-#git clone https://github.com/kubernetes-sigs/kubespray
+下载kubespray源码，安装，这里使用已经下载好了的压缩包kubespray-2.9.0.tar.gz
+#tar -zxf kubespray-2.9.0.tar.gz
 
-后续操作均在~/kubespray目录下执行
-#cd kubespray
+后续操作均在~/kubespray-2.9.0目录下执行
 #pip install -r requirements.txt
 
 复制配置我们要安装集群的配置文件
 #cp -rfp inventory/sample inventory/mycluster
 
 #vi inventory/mycluster/inventory.ini
+-------------------------------------文件内容开始--------------------------------------------
 [all]
 master ansible_host=master   ip=192.168.56.120 
 node1  ansible_host=node1    ip=192.168.56.121 
@@ -108,9 +105,9 @@ kube-master
 kube-node
 
 [calico-rr]
+-------------------------------------文件内容结束----------------------------------------------
 
-----------------------------------------------------------------------------------------
-替换被墙的镜像到私有仓库，具体参考k8s-cluster.yml和main.yml文件
+修改配置文件，把google的镜像地址替换成私有仓库地址，具体参考k8s-cluster.yml和main.yml文件
 
 #vi inventory/mycluster/group_vars/k8s-cluster/k8s-cluster.yml
 kube_image_repo: "192.168.56.200:5000"
@@ -118,36 +115,37 @@ kube_image_repo: "192.168.56.200:5000"
 #vi ./roles/download/defaults/main.yml
 kube_image_repo: "192.168.56.200:5000"
 etcd_image_repo: "192.168.56.200:5000/etcd"
+calicoctl_image_repo: "192.168.56.200:5000/calico/ctl"
+calico_node_image_repo: "192.168.56.200:5000/calico/node"
+calico_cni_image_repo: "192.168.56.200:5000/calico/cni"
+calico_policy_image_repo: "192.168.56.200:5000/calico/kube-controllers"
 pod_infra_image_repo: "192.168.56.200:5000/pause-{{ image_arch }}"
+coredns_image_repo: "192.168.56.200:5000/coredns/coredns"
 dnsautoscaler_image_repo: "192.168.56.200:5000/cluster-proportional-autoscaler-{{ image_arch }}"
 dashboard_image_repo: "192.168.56.200:5000/kubernetes-dashboard-{{ image_arch }}"
 
-修改dashboard开启nodePort端口
+修改dashboard的Service配置，开启nodePort端口，具体参考dashboard.yml.j2
 vi ./roles/kubernetes-apps/ansible/templates/dashboard.yml.j2
 type: NodePort
 
+--------------------------------------环境准备结束，要开始安装了-----------------------------------
 
----------------------------------------运行安装脚本--------------------------------------
-第一次执行
-ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b -v -k
-
-执行会报错停止，原因是docker默认的镜像仓库不是192.168.56.200:5000，不能pull镜像，docker已经安装成功，
-解决办法：将daemon.json复制到每台机器的/etc/docker目录，reboot
-
-第二次执行
-ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b -v -k
+执行安装脚本
+#ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b -v -k
 
 安装成功，查看dashboard的服务端口port
 #kubectl get svc --all-namespaces | grep kubernetes-dashboard
 
-获取dashboard的token
-kubectl -n kube-system describe $(kubectl -n kube-system get secret -n kube-system -o name | grep namespace) | grep token
+浏览器访问dashboard会有证书问题，推荐使用firefox访问dashboard，地址：https://192.168.56.120:port
 
-dashboard访问地址：https://192.168.56.120:xxxx
+选择token方式登录，获取token
+#kubectl -n kube-system describe $(kubectl -n kube-system get secret -n kube-system -o name | grep namespace) | grep token
 
 
 
-----------------------------------------运维经验-----------------------------------------
+
+
+----------------------------------------运维经验，未验证？-----------------------------------------
 如果需要扩容Work节点，则修改hosts.ini文件，增加新增的机器信息。然后执行下面的命令：
 ansible-playbook -i inventory/mycluster/hosts.ini scale.yml -b -v -k
 

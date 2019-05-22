@@ -1,17 +1,11 @@
-docker安装配置
-yum install -y docker
-vi /etc/docker/daemon.json
-{"insecure-registries":["127.0.0.1:5000"]}
-systemctl restart docker
-
 启动私服
-docker run -d -v /opt/registry:/var/lib/registry -p 5000:5000 --privileged=true registry
+docker run -d --restart=always --name myhub -v /opt/registry:/var/lib/registry -p 5000:5000 --privileged=true registry
 
 推送镜像
-docker push 127.0.0.1:5000/hello-world
+docker push 192.168.56.200:5000/hello-world
 
 拉取镜像
-docker pull 127.0.0.1:5000/hello-world
+docker pull 192.168.56.200:5000/hello-world
 
 查看结果
-http://192.168.56.50:5000/v2/_catalog
+http://192.168.56.200:5000/v2/_catalog
