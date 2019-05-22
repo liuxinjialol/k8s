@@ -54,19 +54,6 @@
 -----------------------------------------200机器执行-------------------------------------------
 拷贝releases文件夹到200机器/tmp
 
-#vi /etc/hosts
-192.168.56.120 master
-192.168.56.121 node1
-192.168.56.122 node2
-
-200机器免ssh登录120、121、122
-#ssh-keygen -t rsa
-#ssh-copy-id root@192.168.56.120
-#ssh-copy-id root@192.168.56.121
-#ssh-copy-id root@192.168.56.122
-
-安装kubespray，版本选择release-2.9,地址：https://github.com/kubernetes-sigs/kubespray/tree/release-2.9
-
 安装 centos的epel源
 #yum -y install epel-release
 #yum clean all && yum makecache
@@ -74,7 +61,7 @@
 安装软件，ansible 必须 >= 2.7
 #yum install -y python-pip python34 python-netaddr python34-pip ansible
 
-下载kubespray源码，安装，这里使用已经下载好了的压缩包kubespray-2.9.0.tar.gz
+下载kubespray源码，这里使用已经下载好了的压缩包kubespray-2.9.0.tar.gz
 #tar -zxf kubespray-2.9.0.tar.gz
 
 后续操作均在~/kubespray-2.9.0目录下执行
@@ -128,7 +115,19 @@ dashboard_image_repo: "192.168.56.200:5000/kubernetes-dashboard-{{ image_arch }}
 vi ./roles/kubernetes-apps/ansible/templates/dashboard.yml.j2
 type: NodePort
 
---------------------------------------环境准备结束，要开始安装了-----------------------------------
+
+#vi /etc/hosts
+192.168.56.120 master
+192.168.56.121 node1
+192.168.56.122 node2
+
+200机器免ssh登录120、121、122
+#ssh-keygen -t rsa
+#ssh-copy-id root@192.168.56.120
+#ssh-copy-id root@192.168.56.121
+#ssh-copy-id root@192.168.56.122
+
+--------------------------------------环境准备结束，开始安装-------------------------------------
 
 执行安装脚本
 #ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b -v -k
