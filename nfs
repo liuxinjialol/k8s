@@ -1,0 +1,15 @@
+安装
+#yum install -y nfs-utils
+
+配置
+# vi /etc/exports
+/data/svn *(async,insecure,no_root_squash,no_subtree_check,rw)
+/data/www *(async,insecure,no_root_squash,no_subtree_check,rw)
+/data/jenkins *(async,insecure,no_root_squash,no_subtree_check,rw)
+
+启动并设置开机自动启动
+#systemctl enable nfs-server.service
+#systemctl start nfs-server.service
+
+查看
+#exportfs
