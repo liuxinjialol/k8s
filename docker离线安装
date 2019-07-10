@@ -1,10 +1,1 @@
-https://download.docker.com/linux/static/stable/x86_64/，下载.tgz与要安装的Docker CE版本相关的文件。
-
-$ tar xzvf/path/to/<FILE>.tar.gz
-
-$ sudo cp docker/* /usr/bin/
-
-$ sudo dockerd &
-
-$ docker -v
-
+#rpm -Uvh *.rpm
