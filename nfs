@@ -1,15 +1,34 @@
+关闭网络管理，否则静态ip不生效，还是动态ip
+#systemctl stop NetworkManager && systemctl disable NetworkManager
+
+关闭防火墙
+#systemctl disable firewalld && systemctl stop firewalld
+
 安装
 #yum install -y nfs-utils
 
+#创建nfs目录
+mkdir -p /nfs/data/
+
+#修改权限
+chmod -R 777 /nfs/data
+
 配置
 # vi /etc/exports
-/data/svn *(async,insecure,no_root_squash,no_subtree_check,rw)
-/data/www *(async,insecure,no_root_squash,no_subtree_check,rw)
-/data/jenkins *(async,insecure,no_root_squash,no_subtree_check,rw)
+/nfs/data *(async,insecure,no_root_squash,no_subtree_check,rw)
+/nfs/data/www *(async,insecure,no_root_squash,no_subtree_check,rw)
 
-启动并设置开机自动启动
-#systemctl enable nfs-server.service
-#systemctl start nfs-server.service
+#配置生效
+exportfs -r
+#查看生效
+exportfs
 
-查看
-#exportfs
+#启动rpcbind、nfs服务
+systemctl restart rpcbind && systemctl enable rpcbind
+systemctl restart nfs && systemctl enable nfs
+
+#查看 RPC 服务的注册状况
+rpcinfo -p localhost
+
+#showmount测试
+showmount -e 192.168.56.40
