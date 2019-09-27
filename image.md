@@ -12,6 +12,7 @@
 10.216.50.205:5000/kube-scheduler                          v1.13.5             
 
 10.216.50.205:5000/pause                                   3.1
+
 10.216.50.205:5000/pause-amd64                             3.1                 
                  
 10.216.50.205:5000/cluster-proportional-autoscaler-amd64   1.4.0               
