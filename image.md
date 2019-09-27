@@ -1,19 +1,19 @@
-10.216.50.205:5000/etcd                                    v3.2.26      
-nginx:1.15 
+quay.io/coreos/etcd
+nginx
 
-10.216.50.205:5000/calico/node                             v3.4.0              
-10.216.50.205:5000/calico/cni                              v3.4.0              
-10.216.50.205:5000/coredns/coredns                         1.4.0    
+calico/node
+calico/cni
+calico/kube-controllers
+coredns/coredns
 
+mirrorgooglecontainers/kube-proxy 
+mirrorgooglecontainers/kube-apiserver 
+mirrorgooglecontainers/kube-controller-manager 
+mirrorgooglecontainers/kube-scheduler 
+mirrorgooglecontainers/pause
 
-10.216.50.205:5000/kube-proxy                              v1.13.5             
-10.216.50.205:5000/kube-apiserver                          v1.13.5             
-10.216.50.205:5000/kube-controller-manager                 v1.13.5             
-10.216.50.205:5000/kube-scheduler                          v1.13.5             
-
-10.216.50.205:5000/pause                                   3.1
-
-10.216.50.205:5000/pause-amd64                             3.1                 
-                 
-10.216.50.205:5000/cluster-proportional-autoscaler-amd64   1.4.0               
-10.216.50.205:5000/kubernetes-dashboard-amd64              v1.10.1
+mirrorgooglecontainers/pause-amd64
+mirrorgooglecontainers/cluster-proportional-autoscaler-amd64
+mirrorgooglecontainers/kubernetes-dashboard-amd64
+googlecontainer/k8s-dns-node-cache
+mirrorgooglecontainers/addon-resizer
