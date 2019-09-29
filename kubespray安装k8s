@@ -68,9 +68,9 @@
 #vi inventory/mycluster/inventory.ini
 -------------------------------------文件内容开始--------------------------------------------
 [all]
-master ansible_host=master   ip=192.168.56.120 
-node1  ansible_host=node1    ip=192.168.56.121 
-node2  ansible_host=node2   ip=192.168.56.122 
+master ansible_host=192.168.56.120  ip=192.168.56.120 etcd_member_name=etcd
+node1  ansible_host=192.168.56.121  ip=192.168.56.121 
+node2  ansible_host=192.168.56.122  ip=192.168.56.122 
 
 [kube-master]
 master
