@@ -19,9 +19,6 @@
 192.168.56.122 node2
 
 ----------------------------120、121、122机器------------------------
-拷贝releases文件夹到每台机器/tmp目录
-拷贝daemon.json文件到每台机器/etc/docker目录
-
 关闭网络管理，否则静态ip不生效，还是动态ip
 #systemctl stop NetworkManager && systemctl disable NetworkManager
 
@@ -52,8 +49,6 @@
 #echo "net.bridge.bridge-nf-call-iptables = 1" >> /etc/sysctl.conf && echo "net.bridge.bridge-nf-call-ip6tables = 1" >> /etc/sysctl.conf   && sysctl -p 
 
 -----------------------------------------200机器执行-------------------------------------------
-拷贝releases文件夹到200机器/tmp
-
 安装 centos的epel源
 #yum -y install epel-release
 #yum clean all && yum makecache
@@ -97,19 +92,14 @@ kube-node
 修改配置文件，把google的镜像地址替换成私有仓库地址，具体参考k8s-cluster.yml和main.yml文件
 
 #vi inventory/mycluster/group_vars/k8s-cluster/k8s-cluster.yml
-kube_image_repo: "192.168.56.200:5000"
+kube_image_repo: "gcrcontainer"
 
 #vi ./roles/download/defaults/main.yml
-kube_image_repo: "192.168.56.200:5000"
-etcd_image_repo: "192.168.56.200:5000/etcd"
-calicoctl_image_repo: "192.168.56.200:5000/calico/ctl"
-calico_node_image_repo: "192.168.56.200:5000/calico/node"
-calico_cni_image_repo: "192.168.56.200:5000/calico/cni"
-calico_policy_image_repo: "192.168.56.200:5000/calico/kube-controllers"
-pod_infra_image_repo: "192.168.56.200:5000/pause-{{ image_arch }}"
-coredns_image_repo: "192.168.56.200:5000/coredns/coredns"
-dnsautoscaler_image_repo: "192.168.56.200:5000/cluster-proportional-autoscaler-{{ image_arch }}"
-dashboard_image_repo: "192.168.56.200:5000/kubernetes-dashboard-{{ image_arch }}"
+kube_image_repo: ""
+
+pod_infra_image_repo: "gcrcontainer/pause-{{ image_arch }}"
+dnsautoscaler_image_repo: "gcrcontainer/cluster-proportional-autoscaler-{{ image_arch }}"
+dashboard_image_repo: "gcrcontainer/kubernetes-dashboard-{{ image_arch }}"
 
 修改dashboard的Service配置，开启nodePort端口，具体参考dashboard.yml.j2
 vi ./roles/kubernetes-apps/ansible/templates/dashboard.yml.j2
