@@ -19,6 +19,8 @@ calico/node
 
 calico/cni
 
+calico/ctl
+
 calico/kube-controllers
 
 coredns/coredns
