@@ -7,8 +7,6 @@ mirrorgooglecontainers/kube-controller-manager
 
 mirrorgooglecontainers/kube-scheduler
 
-mirrorgooglecontainers/pause
-
 -------------------------------------
 
 quay.io/coreos/etcd
@@ -24,6 +22,10 @@ calico/ctl
 calico/kube-controllers
 
 coredns/coredns
+
+coredns
+
+mirrorgooglecontainers/pause
 
 mirrorgooglecontainers/pause-amd64
 
