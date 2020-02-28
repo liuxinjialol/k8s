@@ -1,0 +1,136 @@
+说明：k8s安装版本V1.16，#为linux需要执行的命令
+
+准备4台机器，master、node1、node2资源至少需要2cpu，2000M内存
+192.168.56.200        kubespray安装机
+192.168.56.120        master
+192.168.56.121        node1
+192.168.56.122        node2
+
+----------------------------120、121、122机器------------------------
+关闭网络管理，否则静态ip不生效，还是动态ip
+#systemctl stop NetworkManager && systemctl disable NetworkManager
+
+关闭防火墙
+#systemctl disable firewalld && systemctl stop firewalld
+
+设置iptables
+#iptables -P FORWARD ACCEPT
+
+设置docker网易加速代理
+/etc/docker/daemon.json
+{
+  "insecure-registries": ["http://hub-mirror.c.163.com"]
+}
+
+
+-----------------------------------------200机器执行-------------------------------------------
+安装wget
+#yum -y install wget
+
+下载kubespray源码并解压
+#wget https://github.com/kubernetes-sigs/kubespray/archive/v2.12.1.tar.gz
+#tar -zxf v2.12.1.tar.gz
+
+安装 centos的epel源
+#yum -y install epel-release
+
+后续操作均在~/kubespray目录下执行
+
+安装软件ansible
+#pip install -r requirements.txt
+
+复制配置我们要安装集群的配置文件
+#cp -rfp inventory/sample inventory/mycluster
+
+#vi inventory/mycluster/inventory.ini
+-------------------------------------文件内容开始--------------------------------------------
+[all]
+master ansible_host=192.168.56.120  ip=192.168.56.120 etcd_member_name=etcd
+node1  ansible_host=192.168.56.121  ip=192.168.56.121 
+node2  ansible_host=192.168.56.122  ip=192.168.56.122 
+
+[kube-master]
+master
+
+[etcd]
+master
+
+[kube-node]
+node1
+node2
+
+[k8s-cluster:children]
+kube-master
+kube-node
+
+[calico-rr]
+-------------------------------------文件内容结束----------------------------------------------
+
+修改配置文件，把google的镜像地址替换成私有仓库地址，具体参考k8s-cluster.yml和main.yml文件
+
+#vi inventory/mycluster/group_vars/k8s-cluster/k8s-cluster.yml
+kube_image_repo: "mirrorgcrio"
+
+#vi ./roles/download/defaults/main.yml
+kube_image_repo: "mirrorgcrio"
+pod_infra_image_repo: "mirrorgcrio/pause-{{ image_arch }}"
+dnsautoscaler_image_repo: "mirrorgcrio/cluster-proportional-autoscaler-{{ image_arch }}"
+dashboard_image_repo: "mirrorgcrio/kubernetes-dashboard-{{ image_arch }}"
+
+修改dashboard的Service配置，开启nodePort端口，具体参考dashboard.yml.j2
+vi ./roles/kubernetes-apps/ansible/templates/dashboard.yml.j2
+
+spec:
+  ports:
+    - port: 443
+      targetPort: 8443
+      nodePort: 30001
+  selector:
+    k8s-app: kubernetes-dashboard
+  type: NodePort
+  
+  
+单实例需要修改coredns
+#vi ./roles/kubernetes-apps/ansible/templates/coredns-deployment.yml.j2
+spec:
+  replicas: 1  
+
+
+200机器免ssh登录120、121、122
+#ssh-keygen -t rsa
+#ssh-copy-id root@192.168.56.120
+#ssh-copy-id root@192.168.56.121
+#ssh-copy-id root@192.168.56.122
+
+--------------------------------------环境准备结束，开始安装-------------------------------------
+
+执行安装脚本
+#ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b -v -k
+
+安装成功，查看dashboard的服务端口port
+#kubectl get svc --all-namespaces | grep kubernetes-dashboard
+
+浏览器访问dashboard会有证书问题，推荐使用firefox访问dashboard，地址：https://192.168.56.120:30001
+
+选择token方式登录，获取token
+#kubectl -n kube-system describe $(kubectl -n kube-system get secret -n kube-system -o name | grep namespace) | grep token
+
+
+
+
+
+----------------------------------------运维经验，未验证？-----------------------------------------
+如果需要扩容Work节点，则修改hosts.ini文件，增加新增的机器信息。然后执行下面的命令：
+ansible-playbook -i inventory/mycluster/hosts.ini scale.yml -b -v -k
+
+将hosts.ini文件中的master和etcd的机器增加到多台，执行部署命令
+ansible-playbook -i inventory/mycluster/hosts.ini cluster.yml -b -vvv
+
+刪除节点，如果不指定节点就是刪除整个集群：
+ansible-playbook -i inventory/mycluster/hosts.ini remove-node.yml -b -v
+
+如果需要卸载，可以执行以下命令：
+ansible-playbook -i inventory/mycluster/hosts.ini reset.yml -b –vvv
+
+升级K8s集群，选择对应的k8s版本信息，执行升级命令。涉及文件为upgrade-cluster.yml。
+ansible-playbook upgrade-cluster.yml -b -i inventory/mycluster/hosts.ini -e kube_version=vX.XX.XX -vvv
