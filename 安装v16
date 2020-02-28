@@ -34,6 +34,9 @@
 安装 centos的epel源
 #yum -y install epel-release
 
+安装python-pip
+#yum -y install python-pip
+
 后续操作均在~/kubespray目录下执行
 
 安装软件ansible
