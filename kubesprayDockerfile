@@ -1,8 +1,0 @@
-FROM centos:centos7.6.1810
-ADD ansible-2.7.10-1.el7.ans.noarch.rpm ansible-2.7.10-1.el7.ans.noarch.rpm
-ADD requirements.txt requirements.txt
-RUN yum -y localinstall ansible-2.7.10-1.el7.ans.noarch.rpm
-RUN yum -y install epel-release
-RUN yum clean all && yum makecache
-RUN yum install -y python-pip python-netaddr
-RUN pip install -r requirements.txt
