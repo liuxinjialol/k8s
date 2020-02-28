@@ -1,4 +1,4 @@
-说明：k8s安装版本V1.16，#为linux需要执行的命令
+说明：k8s安装版本V1.15，#为linux需要执行的命令
 
 准备4台机器，master、node1、node2资源至少需要2cpu，2000M内存
 192.168.56.200        kubespray安装机
@@ -28,8 +28,8 @@
 #yum -y install wget
 
 下载kubespray源码并解压
-#wget https://github.com/kubernetes-sigs/kubespray/archive/v2.12.1.tar.gz
-#tar -zxf v2.12.1.tar.gz
+#wget https://github.com/kubernetes-sigs/kubespray/archive/v2.11.0.tar.gz
+#tar -zxf v2.11.0.tar.gz
 
 安装 centos的epel源
 #yum -y install epel-release
@@ -93,10 +93,15 @@ spec:
   type: NodePort
   
   
-单实例需要修改coredns
+单机部署需要修改coredns
 #vi ./roles/kubernetes-apps/ansible/templates/coredns-deployment.yml.j2
-spec:
-  replicas: 1  
+affinity:
+        #podAntiAffinity:
+        #  requiredDuringSchedulingIgnoredDuringExecution:
+        #  - topologyKey: "kubernetes.io/hostname"
+        #    labelSelector:
+        #      matchLabels:
+        #        k8s-app: coredns{{ coredns_ordinal_suffix | default('') }}
 
 
 200机器免ssh登录120、121、122
@@ -122,7 +127,7 @@ spec:
 
 
 
-----------------------------------------运维经验，未验证？-----------------------------------------
+----------------------------------------运维经验-----------------------------------------
 如果需要扩容Work节点，则修改hosts.ini文件，增加新增的机器信息。然后执行下面的命令：
 ansible-playbook -i inventory/mycluster/hosts.ini scale.yml -b -v -k
 
