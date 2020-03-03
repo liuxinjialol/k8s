@@ -70,6 +70,7 @@ kube-node
 -------------------------------------文件内容结束----------------------------------------------
 
 修改配置文件，把google的镜像地址替换成私有仓库地址，具体参考k8s-cluster.yml和main.yml文件
+如果找不到镜像，可以换imdingtalk试试
 
 #vi inventory/mycluster/group_vars/k8s-cluster/k8s-cluster.yml
 kube_image_repo: "mirrorgcrio"
